@@ -312,18 +312,20 @@ class IntroduceProblem(Scene):
         self.play(FadeIn(area))
         self.wait()
 
-        
+        from manim import *
+import numpy
+
 maxn = 10
 
 
-def weierstrass(x, b):
+def weierstrass(x, a, b, n):
     y = 0
-    for i in range(1, maxn):
-        y += np.cos((b ** i) * PI * x) / (3 ** i)
-    return 10 * y + 7
+    for i in range(1, n):
+        y += np.cos((b ** i) * PI * x) / (a ** i)
+    return 1 * y + 7
 
 
-class Weierstrass(Scene):
+class Graph(Scene):
     def construct(self):
         axes = Axes(
             x_range=[0, 1, 0.001],
@@ -342,14 +344,14 @@ class Weierstrass(Scene):
         )
 
         f = axes.get_graph(
-            lambda x: weierstrass(x, 0),
+            lambda x: weierstrass(x, 3, 0, 10),
             x_range=[0, 1],
             color=YELLOW,
             stroke_width=1
         )
 
         def updater(mob, alpha):
-            mob.become(axes.get_graph(lambda x: weierstrass(x, interpolate(0, 7, alpha)),
+            mob.become(axes.get_graph(lambda x: weierstrass(x, 3, interpolate(0, 7, alpha), 10),
                                       x_range=[0, 1],
                                       color=YELLOW,
                                       stroke_width=1
@@ -358,4 +360,37 @@ class Weierstrass(Scene):
         self.play(Create(axes))
         self.play(Create(f))
         self.play(UpdateFromAlphaFunc(f, updater, run_time=5))
+        self.wait()
+
+
+class VideoWeierstrass(Scene):
+    def construct(self):
+        n = 10
+        a = 1/0.82
+        b = 7
+        axes = Axes(
+            x_range=[0, 1, 0.001],
+            y_range=[-0.1, 15, 0.001],
+            x_axis_config={
+                "include_numbers": False,
+                "include_ticks": False,
+                "include_tip": True
+            },
+            y_length=5,
+            x_length=10,
+            y_axis_config={"include_ticks": False,
+                           "include_numbers": False,
+                           "include_tip": True},
+            tips=False
+        )
+
+        f = axes.get_graph(
+            lambda x: weierstrass(x, a, b, n),
+            x_range=[0, 1],
+            color=YELLOW,
+            stroke_width=1
+        )
+
+        self.play(Create(axes))
+        self.play(Create(f))
         self.wait()
