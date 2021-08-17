@@ -311,3 +311,51 @@ class IntroduceProblem(Scene):
         area = axes.get_area(graph, [0, 1], color=BLUE, opacity=0.5, dx_scaling=0.5)
         self.play(FadeIn(area))
         self.wait()
+
+        
+maxn = 10
+
+
+def weierstrass(x, b):
+    y = 0
+    for i in range(1, maxn):
+        y += np.cos((b ** i) * PI * x) / (3 ** i)
+    return 10 * y + 7
+
+
+class Weierstrass(Scene):
+    def construct(self):
+        axes = Axes(
+            x_range=[0, 1, 0.001],
+            y_range=[-0.1, 15, 0.001],
+            x_axis_config={
+                "include_numbers": False,
+                "include_ticks": False,
+                "include_tip": True
+            },
+            y_length=5,
+            x_length=10,
+            y_axis_config={"include_ticks": False,
+                           "include_numbers": False,
+                           "include_tip": True},
+            tips=False
+        )
+
+        f = axes.get_graph(
+            lambda x: weierstrass(x, 0),
+            x_range=[0, 1],
+            color=YELLOW,
+            stroke_width=1
+        )
+
+        def updater(mob, alpha):
+            mob.become(axes.get_graph(lambda x: weierstrass(x, interpolate(0, 7, alpha)),
+                                      x_range=[0, 1],
+                                      color=YELLOW,
+                                      stroke_width=1
+                                      ))
+
+        self.play(Create(axes))
+        self.play(Create(f))
+        self.play(UpdateFromAlphaFunc(f, updater, run_time=5))
+        self.wait()
